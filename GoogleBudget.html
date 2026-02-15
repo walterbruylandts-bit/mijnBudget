@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GeldBeheer Pro v7.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-active { color: #4f46e5; border-top: 2px solid #4f46e5; background: #f8fafc; }
+        .card-business { background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; }
+        .btn-slate { background: #1e293b; color: white; border-radius: 0.5rem; transition: opacity 0.2s; }
+        input, select { border: 1px solid #cbd5e1 !important; border-radius: 0.5rem !important; padding: 0.5rem !important; font-size: 0.875rem !important; background-color: white !important; }
+    </style>
+</head>
+<body class="bg-[#F1F5F9] text-slate-800 pb-24 font-sans">
+
+    <!-- TAB 1: DASHBOARD -->
+    <div id="tab1" class="tab-content active p-5 space-y-4">
+        <div class="flex justify-between items-center px-1">
+            <h1 class="text-xl font-bold text-slate-900 uppercase tracking-tight">Februari 2025</h1>
+            <div id="sync-dot" class="w-2 h-2 rounded-full bg-slate-300"></div>
+        </div>
+        <div class="card-business p-6 text-center shadow-sm">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Beschikbaar Totaal</p>
+            <h2 id="dash-totaal" class="text-4xl font-bold text-slate-900 tracking-tight">€ 0,00</h2>
+            <p id="dash-main" class="text-[11px] text-indigo-600 font-semibold mt-2 px-3 py-1 bg-indigo-50 inline-block rounded-md"></p>
+        </div>
+        <div id="dash-accounts" class="space-y-2"></div>
+    </div>
+
+    <!-- TAB 2: INVOER -->
+    <div id="tab2" class="tab-content p-5 space-y-4">
+        <h2 class="text-sm font-bold uppercase text-slate-500">Transactie</h2>
+        <div class="card-business p-4 space-y-3 shadow-sm">
+            <div class="flex bg-slate-100 p-1 rounded-md gap-1">
+                <button onclick="vType='uit';render();" id="v-uit" class="flex-1 py-1.5 text-[10px] font-bold rounded uppercase">Uitgave</button>
+                <button onclick="vType='ink';render();" id="v-ink" class="flex-1 py-1.5 text-[10px] font-bold rounded uppercase">Inkomst</button>
+            </div>
+            <input type="number" id="v-bedrag" placeholder="Bedrag €" class="w-full text-lg font-bold text-center">
+            <input type="date" id="v-datum" class="w-full text-xs">
+            <div class="grid grid-cols-2 gap-2">
+                <select id="v-cat" onchange="renderSub('v')" class="text-xs"></select>
+                <select id="v-subcat" class="text-xs"></select>
+            </div>
+            <button onclick="saveV()" class="w-full btn-slate py-3 font-bold text-xs uppercase tracking-widest">Opslaan</button>
+        </div>
+        <div id="v-hist" class="space-y-1"></div>
+    </div>
+
+    <!-- TAB 3: VASTE POSTEN -->
+    <div id="tab3" class="tab-content p-5 space-y-4">
+        <h2 class="text-sm font-bold uppercase text-slate-500">Vaste Invoer</h2>
+        <div class="card-business p-4 space-y-2 shadow-sm">
+            <div class="flex bg-slate-100 p-1 rounded-md gap-1">
+                <button onclick="fType='uit';render();" id="f-uit" class="flex-1 py-1.5 text-[10px] font-bold rounded uppercase">Uitgave</button>
+                <button onclick="fType='ink';render();" id="f-ink" class="flex-1 py-1.5 text-[10px] font-bold rounded uppercase">Inkomst</button>
+            </div>
+            <input type="text" id="f-naam" placeholder="Naam" class="w-full text-xs">
+            <input type="number" id="f-bedrag" placeholder="Bedrag" class="w-full text-xs">
+            <div class="grid grid-cols-2 gap-2">
+                <input type="number" id="f-dag" placeholder="Dag" class="text-xs">
+                <select id="f-maand" class="text-xs">
+                    <option value="1">Januari</option><option value="2" selected>Februari</option><option value="3">Maart</option>
+                    <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+                    <option value="7">Juli</option><option value="8">Augustus</option><option value="9">September</option>
+                    <option value="10">Oktober</option><option value="11">November</option><option value="12">December</option>
+                </select>
+            </div>
+            <select id="f-freq" class="w-full text-xs">
+                <option value="1">Maandelijks</option><option value="3">Per Kwartaal</option><option value="6">Halfjaarlijks</option><option value="12">Jaarlijks</option>
+            </select>
+            <div class="grid grid-cols-2 gap-2">
+                <select id="f-cat" onchange="renderSub('f')" class="text-xs"></select>
+                <select id="f-subcat" class="text-xs"></select>
+            </div>
+            <button onclick="saveF()" class="w-full bg-indigo-600 text-white py-2 rounded-md font-bold text-[10px] uppercase tracking-widest mt-2">Vastleggen</button>
+        </div>
+        <div id="f-lijst" class="space-y-2"></div>
+    </div>
+
+    <!-- TAB 4: JAARKALENDER -->
+    <div id="tab4" class="tab-content p-5 space-y-4">
+        <h2 class="text-sm font-bold uppercase text-slate-500 text-center">Jaaroverzicht</h2>
+        <div id="jaar-kalender" class="space-y-2"></div>
+    </div>
+
+    <!-- TAB 5: BANKEN -->
+    <div id="tab5" class="tab-content p-5 space-y-4">
+        <h2 class="text-sm font-bold uppercase text-slate-500">Rekeningen</h2>
+        <div id="bank-lijst" class="space-y-2"></div>
+        <div class="card-business p-4 space-y-2 bg-slate-50 border-dashed">
+            <input type="text" id="acc-n" placeholder="Naam" class="w-full text-xs">
+            <input type="number" id="acc-b" placeholder="Saldo" class="w-full text-xs">
+            <select id="acc-t" class="w-full text-xs">
+                <option value="bank">Bankrekening</option>
+                <option value="spaar">Spaarrekening</option>
+            </select>
+            <button onclick="addAcc()" class="w-full bg-slate-800 text-white py-2 rounded-md text-[10px] font-bold uppercase">Toevoegen</button>
+        </div>
+    </div>
+
+    <!-- TAB 7: SETS -->
+    <div id="tab7" class="tab-content p-5 space-y-4">
+        <div class="card-business p-4">
+            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Startsaldo Hoofdrekening</label>
+            <div class="flex gap-2">
+                <input type="number" id="set-main" class="flex-1 text-xs font-bold">
+                <button onclick="updateMain()" class="bg-indigo-600 text-white px-4 rounded-md text-[10px] font-bold">SET</button>
+            </div>
+        </div>
+        <div id="cat-manage" class="space-y-3"></div>
+        <div class="flex gap-2">
+            <input type="text" id="n-cat" placeholder="Nieuwe Categorie" class="flex-1 text-xs">
+            <button onclick="addC()" class="bg-slate-800 text-white px-4 rounded-md font-bold">+</button>
+        </div>
+    </div>
+
+    <!-- TAB 8: SYNC -->
+    <div id="tab8" class="tab-content p-5 space-y-4">
+        <h2 class="text-sm font-bold uppercase text-slate-500 text-center">Sync</h2>
+        <div class="card-business p-5 space-y-3">
+            <input type="text" id="b-id" placeholder="Bin ID" class="w-full text-xs">
+            <input type="password" id="b-key" placeholder="Master Key" class="w-full text-xs">
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="cloud('PUT')" class="bg-indigo-600 text-white py-3 rounded-md text-[10px] font-bold uppercase">Upload</button>
+                <button onclick="cloud('GET')" class="border border-indigo-600 text-indigo-600 py-3 rounded-md text-[10px] font-bold uppercase">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50">
+        <button onclick="tab(1)" class="nav-btn px-2 text-[8px] font-bold uppercase nav-active">Dash</button>
+        <button onclick="tab(2)" class="nav-btn px-2 text-[8px] font-bold uppercase">Invoer</button>
+        <button onclick="tab(3)" class="nav-btn px-2 text-[8px] font-bold uppercase">Vast</button>
+        <button onclick="tab(4)" class="nav-btn px-2 text-[8px] font-bold uppercase">Jaar</button>
+        <button onclick="tab(5)" class="nav-btn px-2 text-[8px] font-bold uppercase">Bank</button>
+        <button onclick="tab(7)" class="nav-btn px-2 text-[8px] font-bold uppercase">Sets</button>
+        <button onclick="tab(8)" class="nav-btn px-2 text-[8px] font-bold uppercase">Sync</button>
+    </nav>
+
+    <script>
+        let db = { main: 435.42, accounts: [], cats: {"Voeding": ["Supermarkt"]}, fixed: [], trans: [], sync: {id:'', key:''} };
+        let vType = 'uit', fType = 'uit';
+
+        function init() {
+            const s = localStorage.getItem('GB_V7_FINAL');
+            if(s) db = JSON.parse(s);
+            document.getElementById('b-id').value = db.sync.id || '';
+            document.getElementById('b-key').value = db.sync.key || '';
+            document.getElementById('v-datum').valueAsDate = new Date();
+            render();
+        }
+
+        function tab(i) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById('tab'+i).classList.add('active');
+            event.currentTarget.classList.add('nav-active');
+            if(i===4) buildKalender();
+            render();
+        }
+
+        function renderSub(mode) {
+            const c = document.getElementById(mode+'-cat').value;
+            const s = document.getElementById(mode+'-subcat');
+            s.innerHTML = '<option value="">Geen sub</option>';
+            if(db.cats[c]) db.cats[c].forEach(sc => s.innerHTML += `<option value="${sc}">${sc}</option>`);
+        }
+
+        function render() {
+            let t = db.main;
+            const dNu = new Date().getDate();
+            const mNu = new Date().getMonth() + 1;
+
+            db.fixed.forEach(f => {
+                const startM = parseInt(f.startMonth);
+                const freq = parseInt(f.freq);
+                const mDiff = mNu - startM;
+                if (mDiff >= 0 && mDiff % freq === 0 && parseInt(f.dag) <= dNu) {
+                    if(f.type==='ink') t += parseFloat(f.bedrag); else t -= parseFloat(f.bedrag);
+                }
+            });
+
+            let accH = ''; let bH = '';
+            db.accounts.forEach((a, i) => {
+                if(a.incl) t += a.bal;
+                accH += `<div class="card-business p-3 flex justify-between text-xs font-semibold"><span>${a.name}</span><span>€ ${a.bal.toFixed(2)}</span></div>`;
+                bH += `<div class="card-business p-3 flex justify-between items-center text-xs"><div><p class="font-bold">${a.name}</p><p class="opacity-40">€ ${a.bal.toFixed(2)}</p></div><div class="flex gap-3"><input type="checkbox" ${a.incl?'checked':''} onchange="db.accounts[${i}].incl=!db.accounts[${i}].incl;render();"><button onclick="editA(${i})">✏️</button><button onclick="delA(${i})">🗑️</button></div></div>`;
+            });
+
+            document.getElementById('dash-totaal').innerText = '€ ' + t.toLocaleString('nl-BE',{minimumFractionDigits:2});
+            document.getElementById('dash-main').innerText = 'Lopend: € ' + db.main.toFixed(2);
+            document.getElementById('dash-accounts').innerHTML = accH;
+            document.getElementById('bank-lijst').innerHTML = bH;
+
+            ['v','f'].forEach(m => {
+                const sel = document.getElementById(m+'-cat'); const cur = sel.value; sel.innerHTML = '';
+                Object.keys(db.cats).forEach(k => sel.innerHTML += `<option value="${k}">${k}</option>`);
+                if(cur) sel.value = cur; else renderSub(m);
+            });
+
+            let fH = '';
+            db.fixed.forEach((f, i) => { fH += `<div class="card-business p-2 flex justify-between text-[10px] items-center"><span><b>${f.naam}</b> (${f.freq}m)</span><span class="${f.type==='ink'?'text-green-600':'text-red-600'} font-bold">€ ${f.bedrag} <button onclick="db.fixed.splice(${i},1);render();" class="ml-1 opacity-20">🗑️</button></span></div>`; });
+            document.getElementById('f-lijst').innerHTML = fH;
+
+            let vH = '';
+            db.trans.slice(-3).reverse().forEach((x, i) => { const realIdx = db.trans.length - 1 - i; vH += `<div class="bg-white p-2 border-b flex justify-between text-[9px] items-center uppercase tracking-tighter"><span>${x.datum} | ${x.cat}</span><span class="${x.type==='ink'?'text-green-500':'text-red-500'} font-bold">€${x.bedrag} <button onclick="db.trans.splice(${realIdx},1);render();" class="ml-1">✕</button></span></div>`; });
+            document.getElementById('v-hist').innerHTML = vH;
+
+            let mH = '';
+            Object.keys(db.cats).forEach(k => { mH += `<div class="card-business p-3 space-y-2 text-xs"><div class="flex justify-between font-bold"><span>${k}</span><button onclick="delete db.cats['${k}'];render();" class="text-[9px] text-red-500">WIS</button></div><div class="flex gap-2"><input type="text" id="in-${k}" placeholder="Sub.." class="flex-1 text-[10px] border"><button onclick="addS('${k}')" class="bg-slate-100 px-2 rounded">+</button></div><div class="text-[8px] opacity-40 uppercase">${db.cats[k].join(' • ')}</div></div>`; });
+            document.getElementById('cat-manage').innerHTML = mH;
+
+            document.getElementById('v-uit').className = vType==='uit'?'flex-1 py-1.5 text-[10px] font-bold rounded uppercase btn-slate':'flex-1 py-1.5 text-[10px] font-bold rounded uppercase text-slate-400';
+            document.getElementById('v-ink').className = vType==='ink'?'flex-1 py-1.5 text-[10px] font-bold rounded uppercase btn-slate':'flex-1 py-1.5 text-[10px] font-bold rounded uppercase text-slate-400';
+            document.getElementById('f-uit').className = fType==='uit'?'flex-1 py-1.5 text-[10px] font-bold rounded uppercase btn-slate':'flex-1 py-1.5 text-[10px] font-bold rounded uppercase text-slate-400';
+            document.getElementById('f-ink').className = fType==='ink'?'flex-1 py-1.5 text-[10px] font-bold rounded uppercase btn-slate':'flex-1 py-1.5 text-[10px] font-bold rounded uppercase text-slate-400';
+            localStorage.setItem('GB_V7_FINAL', JSON.stringify(db));
+        }
+
+        function buildKalender() {
+            const h = document.getElementById('jaar-kalender'); h.innerHTML = '';
+            const mNamen = ['Jan','Feb','Maa','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'];
+            for(let m=1; m<=12; m++) {
+                let mTotal = 0; let items = [];
+                db.fixed.forEach(f => {
+                    const startM = parseInt(f.startMonth); const freq = parseInt(f.freq);
+                    if((m - startM) >= 0 && (m - startM) % freq === 0) {
+                        const val = parseFloat(f.bedrag);
+                        if(f.type==='ink') mTotal += val; else mTotal -= val;
+                        items.push(`<div class="flex justify-between ${f.type==='ink'?'text-green-600':'text-red-400'}"><span>${f.naam}</span><span>€${val}</span></div>`);
+                    }
+                });
+                h.innerHTML += `<div class="card-business p-3"><div class="flex justify-between font-bold border-b pb-1 mb-1 text-xs"><span>${mNamen[m-1]}</span><span class="${mTotal>=0?'text-green-600':'text-red-600'}">€${mTotal.toFixed(2)}</span></div><div class="text-[9px] opacity-70">${items.join('') || 'Geen vaste posten'}</div></div>`;
+            }
+        }
+
+        function saveV() { const b=parseFloat(document.getElementById('v-bedrag').value), d=document.getElementById('v-datum').value, c=document.getElementById('v-cat').value, s=document.getElementById('v-subcat').value; if(!b) return; if(vType==='ink') db.main+=b; else db.main-=b; db.trans.push({bedrag:b, datum:d, cat:c, sub:s, type:vType}); document.getElementById('v-bedrag').value=''; render(); tab(1); }
+        function saveF() { const n=document.getElementById('f-naam').value, b=document.getElementById('f-bedrag').value, d=document.getElementById('f-dag').value, m=document.getElementById('f-maand').value, q=document.getElementById('f-freq').value, c=document.getElementById('f-cat').value, s=document.getElementById('f-subcat').value; if(n && b) { db.fixed.push({naam:n, bedrag:b, dag:d, startMonth:m, freq:q, cat:c, sub:s, type:fType}); render(); } }
+        function addAcc() { const n=document.getElementById('acc-n').value, b=parseFloat(document.getElementById('acc-b').value), t=document.getElementById('acc-t').value; if(n) { db.accounts.push({name:n, bal:b, type:t, incl:false}); render(); } }
+        function editA(i) { const b=prompt("Saldo voor "+db.accounts[i].name, db.accounts[i].bal); if(b) { db.accounts[i].bal=parseFloat(b); render(); } }
+        function delA(i) { if(confirm("Wissen?")) { db.accounts.splice(i,1); render(); } }
+        function addC() { const n=document.getElementById('n-cat').value; if(n) { db.cats[n]=[]; render(); } }
+        function addS(k) { const s=document.getElementById('in-'+k).value; if(s) { db.cats[k].push(s); render(); } }
+        function updateMain() { db.main=parseFloat(document.getElementById('set-main').value); render(); }
+
+async function cloud(m) {
+    const id = document.getElementById('b-id').value.trim();
+    const k = document.getElementById('b-key').value.trim();
+    
+    if(!id || !k) return alert('Vul ID en Key in');
+    
+    // Sla keys op in lokale db
+    db.sync = {id, key:k};
+
+    // We voegen een tijdstempel toe om browser-caching te voorkomen
+    const url = `https://api.jsonbin.io{id}${m==='GET' ? '/latest?nocache=' + Date.now() : ''}`;
+    
+    try {
+        const response = await fetch(url, {
+            method: m === 'GET' ? 'GET' : 'PUT',
+            headers: {
+                'X-Master-Key': k,
+                'Content-Type': 'application/json',
+                'X-Bin-Private': 'true'
+            },
+            body: m === 'PUT' ? JSON.stringify(db) : null
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Server fout');
+        }
+
+        if (m === 'GET') {
+            if (result.record) {
+                db = result.record;
+                render();
+                alert('Data succesvol gedownload!');
+            } else {
+                throw new Error('Geen data gevonden in deze bin.');
+            }
+        } else {
+            alert('Data succesvol geüpload naar de cloud!');
+        }
+        
+        document.getElementById('sync-dot').className = 'w-2 h-2 rounded-full bg-green-500';
+    } catch (error) {
+        console.error('Sync Error:', error);
+        alert('SYNF FOUT: ' + error.message + '\n\n1. Check of je Master Key klopt.\n2. Check of je Bin niet leeg is op jsonbin.io');
+    }
+}
+
+
+        init();
+    </script>
+</body>
+</html>
