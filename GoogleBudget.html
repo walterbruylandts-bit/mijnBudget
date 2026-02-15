@@ -251,50 +251,44 @@ async function cloud(m) {
     const id = document.getElementById('b-id').value.trim();
     const k = document.getElementById('b-key').value.trim();
     
-    if(!id || !k) return alert('Vul ID en Key in');
+    if(!id || !k) return alert('Vul ID en Key in op de Sync-tab');
     
-    // Sla keys op in lokale db
     db.sync = {id, key:k};
 
-    // We voegen een tijdstempel toe om browser-caching te voorkomen
-    const url = `https://api.jsonbin.io{id}${m==='GET' ? '/latest?nocache=' + Date.now() : ''}`;
+    const url = `https://api.jsonbin.io{id}` + (m === 'GET' ? '/latest' : '');
     
     try {
         const response = await fetch(url, {
             method: m === 'GET' ? 'GET' : 'PUT',
             headers: {
                 'X-Master-Key': k,
-                'Content-Type': 'application/json',
-                'X-Bin-Private': 'true'
+                'Content-Type': 'application/json'
             },
             body: m === 'PUT' ? JSON.stringify(db) : null
         });
 
-        const result = await response.json();
-
         if (!response.ok) {
-            throw new Error(result.message || 'Server fout');
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Server fout');
         }
 
+        const result = await response.json();
+        
         if (m === 'GET') {
-            if (result.record) {
-                db = result.record;
-                render();
-                alert('Data succesvol gedownload!');
-            } else {
-                throw new Error('Geen data gevonden in deze bin.');
-            }
+            db = result.record;
+            render();
+            alert('Cloud Data Succesvol Geladen!');
         } else {
-            alert('Data succesvol geüpload naar de cloud!');
+            alert('Cloud Data Succesvol Opgeslagen!');
         }
         
         document.getElementById('sync-dot').className = 'w-2 h-2 rounded-full bg-green-500';
+        
     } catch (error) {
         console.error('Sync Error:', error);
-        alert('SYNF FOUT: ' + error.message + '\n\n1. Check of je Master Key klopt.\n2. Check of je Bin niet leeg is op jsonbin.io');
+        alert('SYNC MISLUKT: ' + error.message + '\n\nCheck of je Master Key en Bin ID exact kloppen.');
     }
 }
-
 
         init();
     </script>
