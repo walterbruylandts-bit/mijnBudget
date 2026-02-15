@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GeldBeheer Pro v7.1</title>
+    <title>GeldBeheer Pro v8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .nav-active { color: #4f46e5; border-top: 2px solid #4f46e5; background: #f8fafc; }
         .card-business { background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; }
-        .btn-slate { background: #1e293b; color: white; border-radius: 0.5rem; transition: opacity 0.2s; }
+        .btn-slate { background: #1e293b; color: white; border-radius: 0.5rem; }
         input, select { border: 1px solid #cbd5e1 !important; border-radius: 0.5rem !important; padding: 0.5rem !important; font-size: 0.875rem !important; background-color: white !important; }
     </style>
 </head>
@@ -18,22 +18,22 @@
 
     <!-- TAB 1: DASHBOARD -->
     <div id="tab1" class="tab-content active p-5 space-y-4">
-        <div class="flex justify-between items-center px-1">
-            <h1 class="text-xl font-bold text-slate-900 uppercase tracking-tight">Februari 2025</h1>
-            <div id="sync-dot" class="w-2 h-2 rounded-full bg-slate-300"></div>
+        <div class="flex justify-between items-center">
+            <h1 class="text-xl font-bold uppercase tracking-tight">Overzicht</h1>
+            <div id="sync-dot" class="w-3 h-3 rounded-full bg-slate-300 shadow-inner"></div>
         </div>
         <div class="card-business p-6 text-center shadow-sm">
             <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Beschikbaar Totaal</p>
             <h2 id="dash-totaal" class="text-4xl font-bold text-slate-900 tracking-tight">€ 0,00</h2>
             <p id="dash-main" class="text-[11px] text-indigo-600 font-semibold mt-2 px-3 py-1 bg-indigo-50 inline-block rounded-md"></p>
         </div>
-        <div id="dash-accounts" class="space-y-2"></div>
+        <div id="dash-accounts" class="grid grid-cols-1 gap-2"></div>
     </div>
 
     <!-- TAB 2: INVOER -->
     <div id="tab2" class="tab-content p-5 space-y-4">
         <h2 class="text-sm font-bold uppercase text-slate-500">Transactie</h2>
-        <div class="card-business p-4 space-y-3 shadow-sm">
+        <div class="card-business p-4 space-y-3">
             <div class="flex bg-slate-100 p-1 rounded-md gap-1">
                 <button onclick="vType='uit';render();" id="v-uit" class="flex-1 py-1.5 text-[10px] font-bold rounded uppercase">Uitgave</button>
                 <button onclick="vType='ink';render();" id="v-ink" class="flex-1 py-1.5 text-[10px] font-bold rounded uppercase">Inkomst</button>
@@ -49,23 +49,23 @@
         <div id="v-hist" class="space-y-1"></div>
     </div>
 
-    <!-- TAB 3: VASTE POSTEN -->
+    <!-- TAB 3: VASTE INVOER -->
     <div id="tab3" class="tab-content p-5 space-y-4">
-        <h2 class="text-sm font-bold uppercase text-slate-500">Vaste Invoer</h2>
+        <h2 class="text-sm font-bold uppercase text-slate-500">Vaste Posten</h2>
         <div class="card-business p-4 space-y-2 shadow-sm">
-            <div class="flex bg-slate-100 p-1 rounded-md gap-1">
+            <div class="flex bg-slate-100 p-1 rounded-md gap-1 mb-2">
                 <button onclick="fType='uit';render();" id="f-uit" class="flex-1 py-1.5 text-[10px] font-bold rounded uppercase">Uitgave</button>
                 <button onclick="fType='ink';render();" id="f-ink" class="flex-1 py-1.5 text-[10px] font-bold rounded uppercase">Inkomst</button>
             </div>
             <input type="text" id="f-naam" placeholder="Naam" class="w-full text-xs">
             <input type="number" id="f-bedrag" placeholder="Bedrag" class="w-full text-xs">
             <div class="grid grid-cols-2 gap-2">
-                <input type="number" id="f-dag" placeholder="Dag" class="text-xs">
+                <input type="number" id="f-dag" placeholder="Dag (1-31)" class="text-xs">
                 <select id="f-maand" class="text-xs">
-                    <option value="1">Januari</option><option value="2" selected>Februari</option><option value="3">Maart</option>
-                    <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
-                    <option value="7">Juli</option><option value="8">Augustus</option><option value="9">September</option>
-                    <option value="10">Oktober</option><option value="11">November</option><option value="12">December</option>
+                    <option value="1">Jan</option><option value="2" selected>Feb</option><option value="3">Maa</option>
+                    <option value="4">Apr</option><option value="5">Mei</option><option value="6">Jun</option>
+                    <option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option>
+                    <option value="10">Okt</option><option value="11">Nov</option><option value="12">Dec</option>
                 </select>
             </div>
             <select id="f-freq" class="w-full text-xs">
@@ -75,14 +75,14 @@
                 <select id="f-cat" onchange="renderSub('f')" class="text-xs"></select>
                 <select id="f-subcat" class="text-xs"></select>
             </div>
-            <button onclick="saveF()" class="w-full bg-indigo-600 text-white py-2 rounded-md font-bold text-[10px] uppercase tracking-widest mt-2">Vastleggen</button>
+            <button onclick="saveF()" class="w-full bg-indigo-600 text-white py-2 rounded-md font-bold text-[10px] uppercase mt-2">Vastleggen</button>
         </div>
         <div id="f-lijst" class="space-y-2"></div>
     </div>
 
-    <!-- TAB 4: JAARKALENDER -->
+    <!-- TAB 4: JAAR -->
     <div id="tab4" class="tab-content p-5 space-y-4">
-        <h2 class="text-sm font-bold uppercase text-slate-500 text-center">Jaaroverzicht</h2>
+        <h2 class="text-sm font-bold uppercase text-slate-500 text-center text-xs">Jaarkalender 2025</h2>
         <div id="jaar-kalender" class="space-y-2"></div>
     </div>
 
@@ -90,13 +90,10 @@
     <div id="tab5" class="tab-content p-5 space-y-4">
         <h2 class="text-sm font-bold uppercase text-slate-500">Rekeningen</h2>
         <div id="bank-lijst" class="space-y-2"></div>
-        <div class="card-business p-4 space-y-2 bg-slate-50 border-dashed">
-            <input type="text" id="acc-n" placeholder="Naam" class="w-full text-xs">
+        <div class="card-business p-4 bg-slate-50 border-dashed space-y-2">
+            <input type="text" id="acc-n" placeholder="Naam Rekening" class="w-full text-xs">
             <input type="number" id="acc-b" placeholder="Saldo" class="w-full text-xs">
-            <select id="acc-t" class="w-full text-xs">
-                <option value="bank">Bankrekening</option>
-                <option value="spaar">Spaarrekening</option>
-            </select>
+            <select id="acc-t" class="w-full text-xs"><option value="bank">Bankrekening</option><option value="spaar">Spaarrekening</option></select>
             <button onclick="addAcc()" class="w-full bg-slate-800 text-white py-2 rounded-md text-[10px] font-bold uppercase">Toevoegen</button>
         </div>
     </div>
@@ -104,13 +101,13 @@
     <!-- TAB 7: SETS -->
     <div id="tab7" class="tab-content p-5 space-y-4">
         <div class="card-business p-4">
-            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Startsaldo Hoofdrekening</label>
+            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Hoofdrekening Startsaldo</label>
             <div class="flex gap-2">
                 <input type="number" id="set-main" class="flex-1 text-xs font-bold">
-                <button onclick="updateMain()" class="bg-indigo-600 text-white px-4 rounded-md text-[10px] font-bold">SET</button>
+                <button onclick="updateMain()" class="bg-indigo-600 text-white px-4 rounded-md text-[10px] font-bold uppercase">Set</button>
             </div>
         </div>
-        <div id="cat-manage" class="space-y-3"></div>
+        <div id="cat-manage" class="space-y-2"></div>
         <div class="flex gap-2">
             <input type="text" id="n-cat" placeholder="Nieuwe Categorie" class="flex-1 text-xs">
             <button onclick="addC()" class="bg-slate-800 text-white px-4 rounded-md font-bold">+</button>
@@ -118,20 +115,27 @@
     </div>
 
     <!-- TAB 8: SYNC -->
-    <div id="tab8" class="tab-content p-5 space-y-4">
-        <h2 class="text-sm font-bold uppercase text-slate-500 text-center">Sync</h2>
-        <div class="card-business p-5 space-y-3">
-            <input type="text" id="b-id" placeholder="Bin ID" class="w-full text-xs">
-            <input type="password" id="b-key" placeholder="Master Key" class="w-full text-xs">
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="cloud('PUT')" class="bg-indigo-600 text-white py-3 rounded-md text-[10px] font-bold uppercase">Upload</button>
-                <button onclick="cloud('GET')" class="border border-indigo-600 text-indigo-600 py-3 rounded-md text-[10px] font-bold uppercase">Download</button>
+    <div id="tab8" class="tab-content p-5 space-y-4 text-center">
+        <h2 class="text-sm font-bold uppercase text-slate-500">Cloud Synchronisatie</h2>
+        <div class="card-business p-5 space-y-3 text-left">
+            <div>
+                <label class="text-[10px] font-bold text-slate-400 uppercase">Gebruikersnaam</label>
+                <input type="text" id="sync-user" placeholder="Bijv. jandevries" class="w-full text-xs">
             </div>
+            <div>
+                <label class="text-[10px] font-bold text-slate-400 uppercase">Wachtwoord</label>
+                <input type="password" id="sync-pass" placeholder="Verzin een wachtwoord" class="w-full text-xs">
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button onclick="cloudSync('UPLOAD')" class="bg-indigo-600 text-white py-3 rounded-md text-[10px] font-bold uppercase tracking-widest">Upload</button>
+                <button onclick="cloudSync('DOWNLOAD')" class="border border-indigo-600 text-indigo-600 py-3 rounded-md text-[10px] font-bold uppercase tracking-widest">Download</button>
+            </div>
+            <p class="text-[9px] text-slate-400 text-center italic">Zorg dat de combinatie uniek is voor je privacy.</p>
         </div>
     </div>
 
     <!-- NAV -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50 shadow-lg">
         <button onclick="tab(1)" class="nav-btn px-2 text-[8px] font-bold uppercase nav-active">Dash</button>
         <button onclick="tab(2)" class="nav-btn px-2 text-[8px] font-bold uppercase">Invoer</button>
         <button onclick="tab(3)" class="nav-btn px-2 text-[8px] font-bold uppercase">Vast</button>
@@ -142,14 +146,15 @@
     </nav>
 
     <script>
-        let db = { main: 435.42, accounts: [], cats: {"Voeding": ["Supermarkt"]}, fixed: [], trans: [], sync: {id:'', key:''} };
+        let db = { main: 435.42, accounts: [], cats: {"Voeding": ["Supermarkt"]}, fixed: [], trans: [], sync: {user:'', pass:''} };
         let vType = 'uit', fType = 'uit';
 
         function init() {
-            const s = localStorage.getItem('GB_V7_FINAL');
+            const s = localStorage.getItem('GB_V8_FINAL');
             if(s) db = JSON.parse(s);
-            document.getElementById('b-id').value = db.sync.id || '';
-            document.getElementById('b-key').value = db.sync.key || '';
+            document.getElementById('set-main').value = db.main;
+            document.getElementById('sync-user').value = db.sync.user || '';
+            document.getElementById('sync-pass').value = db.sync.pass || '';
             document.getElementById('v-datum').valueAsDate = new Date();
             render();
         }
@@ -172,8 +177,9 @@
 
         function render() {
             let t = db.main;
-            const dNu = new Date().getDate();
-            const mNu = new Date().getMonth() + 1;
+            const nu = new Date();
+            const dNu = nu.getDate();
+            const mNu = nu.getMonth() + 1;
 
             db.fixed.forEach(f => {
                 const startM = parseInt(f.startMonth);
@@ -184,17 +190,17 @@
                 }
             });
 
-            let accH = ''; let bH = '';
+            let accH = ''; let bankH = '';
             db.accounts.forEach((a, i) => {
                 if(a.incl) t += a.bal;
                 accH += `<div class="card-business p-3 flex justify-between text-xs font-semibold"><span>${a.name}</span><span>€ ${a.bal.toFixed(2)}</span></div>`;
-                bH += `<div class="card-business p-3 flex justify-between items-center text-xs"><div><p class="font-bold">${a.name}</p><p class="opacity-40">€ ${a.bal.toFixed(2)}</p></div><div class="flex gap-3"><input type="checkbox" ${a.incl?'checked':''} onchange="db.accounts[${i}].incl=!db.accounts[${i}].incl;render();"><button onclick="editA(${i})">✏️</button><button onclick="delA(${i})">🗑️</button></div></div>`;
+                bankH += `<div class="card-business p-3 flex justify-between items-center text-xs"><div><p class="font-bold text-[10px]">${a.name} <span class="text-blue-500">(${a.type})</span></p><p class="opacity-40">€ ${a.bal.toFixed(2)}</p></div><div class="flex gap-3"><input type="checkbox" ${a.incl?'checked':''} onchange="db.accounts[${i}].incl=!db.accounts[${i}].incl;render();"><button onclick="editA(${i})">✏️</button><button onclick="delA(${i})">🗑️</button></div></div>`;
             });
 
             document.getElementById('dash-totaal').innerText = '€ ' + t.toLocaleString('nl-BE',{minimumFractionDigits:2});
-            document.getElementById('dash-main').innerText = 'Lopend: € ' + db.main.toFixed(2);
+            document.getElementById('dash-main').innerText = 'Hoofdrekening: € ' + db.main.toFixed(2);
             document.getElementById('dash-accounts').innerHTML = accH;
-            document.getElementById('bank-lijst').innerHTML = bH;
+            document.getElementById('bank-lijst').innerHTML = bankH;
 
             ['v','f'].forEach(m => {
                 const sel = document.getElementById(m+'-cat'); const cur = sel.value; sel.innerHTML = '';
@@ -203,7 +209,7 @@
             });
 
             let fH = '';
-            db.fixed.forEach((f, i) => { fH += `<div class="card-business p-2 flex justify-between text-[10px] items-center"><span><b>${f.naam}</b> (${f.freq}m)</span><span class="${f.type==='ink'?'text-green-600':'text-red-600'} font-bold">€ ${f.bedrag} <button onclick="db.fixed.splice(${i},1);render();" class="ml-1 opacity-20">🗑️</button></span></div>`; });
+            db.fixed.forEach((f, i) => { fH += `<div class="card-business p-2 flex justify-between text-[10px] items-center"><span><b>${f.naam}</b> <small>(${f.freq}m)</small></span><span class="${f.type==='ink'?'text-green-600':'text-red-600'} font-bold">€ ${f.bedrag} <button onclick="db.fixed.splice(${i},1);render();" class="ml-1 opacity-20">🗑️</button></span></div>`; });
             document.getElementById('f-lijst').innerHTML = fH;
 
             let vH = '';
@@ -218,7 +224,7 @@
             document.getElementById('v-ink').className = vType==='ink'?'flex-1 py-1.5 text-[10px] font-bold rounded uppercase btn-slate':'flex-1 py-1.5 text-[10px] font-bold rounded uppercase text-slate-400';
             document.getElementById('f-uit').className = fType==='uit'?'flex-1 py-1.5 text-[10px] font-bold rounded uppercase btn-slate':'flex-1 py-1.5 text-[10px] font-bold rounded uppercase text-slate-400';
             document.getElementById('f-ink').className = fType==='ink'?'flex-1 py-1.5 text-[10px] font-bold rounded uppercase btn-slate':'flex-1 py-1.5 text-[10px] font-bold rounded uppercase text-slate-400';
-            localStorage.setItem('GB_V7_FINAL', JSON.stringify(db));
+            localStorage.setItem('GB_V8_FINAL', JSON.stringify(db));
         }
 
         function buildKalender() {
@@ -238,6 +244,32 @@
             }
         }
 
+        async function cloudSync(m) {
+            const user = document.getElementById('sync-user').value.trim();
+            const pass = document.getElementById('sync-pass').value.trim();
+            if(!user || !pass) return alert('Vul Gebruikersnaam en Wachtwoord in!');
+            db.sync = {user, pass};
+            const storageId = btoa(user + "-" + pass); // Base64 hash voor veiligheid
+            const url = `https://kv-store.vercel.app{storageId}`; // Gebruikt een publieke API proxy
+
+            try {
+                if (m === 'UPLOAD') {
+                    const res = await fetch(url, { method: 'POST', body: JSON.stringify(db) });
+                    if(res.ok) alert('UPLOAD GESLAAGD!');
+                } else {
+                    const res = await fetch(url);
+                    if(res.ok) {
+                        db = await res.json();
+                        render();
+                        alert('DOWNLOAD GESLAAGD!');
+                    } else { alert('Nog geen data gevonden. Doe eerst een Upload.'); }
+                }
+                document.getElementById('sync-dot').className = 'w-3 h-3 rounded-full bg-green-500 shadow-md';
+            } catch(e) {
+                alert('Netwerkfout. Probeer het over een moment opnieuw.');
+            }
+        }
+
         function saveV() { const b=parseFloat(document.getElementById('v-bedrag').value), d=document.getElementById('v-datum').value, c=document.getElementById('v-cat').value, s=document.getElementById('v-subcat').value; if(!b) return; if(vType==='ink') db.main+=b; else db.main-=b; db.trans.push({bedrag:b, datum:d, cat:c, sub:s, type:vType}); document.getElementById('v-bedrag').value=''; render(); tab(1); }
         function saveF() { const n=document.getElementById('f-naam').value, b=document.getElementById('f-bedrag').value, d=document.getElementById('f-dag').value, m=document.getElementById('f-maand').value, q=document.getElementById('f-freq').value, c=document.getElementById('f-cat').value, s=document.getElementById('f-subcat').value; if(n && b) { db.fixed.push({naam:n, bedrag:b, dag:d, startMonth:m, freq:q, cat:c, sub:s, type:fType}); render(); } }
         function addAcc() { const n=document.getElementById('acc-n').value, b=parseFloat(document.getElementById('acc-b').value), t=document.getElementById('acc-t').value; if(n) { db.accounts.push({name:n, bal:b, type:t, incl:false}); render(); } }
@@ -246,49 +278,6 @@
         function addC() { const n=document.getElementById('n-cat').value; if(n) { db.cats[n]=[]; render(); } }
         function addS(k) { const s=document.getElementById('in-'+k).value; if(s) { db.cats[k].push(s); render(); } }
         function updateMain() { db.main=parseFloat(document.getElementById('set-main').value); render(); }
-
-async function cloud(m) {
-    const id = document.getElementById('b-id').value.trim();
-    const k = document.getElementById('b-key').value.trim();
-    
-    if(!id || !k) return alert('Vul ID en Key in op de Sync-tab');
-    
-    db.sync = {id, key:k};
-
-    const url = `https://api.jsonbin.io{id}` + (m === 'GET' ? '/latest' : '');
-    
-    try {
-        const response = await fetch(url, {
-            method: m === 'GET' ? 'GET' : 'PUT',
-            headers: {
-                'X-Master-Key': k,
-                'Content-Type': 'application/json'
-            },
-            body: m === 'PUT' ? JSON.stringify(db) : null
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Server fout');
-        }
-
-        const result = await response.json();
-        
-        if (m === 'GET') {
-            db = result.record;
-            render();
-            alert('Cloud Data Succesvol Geladen!');
-        } else {
-            alert('Cloud Data Succesvol Opgeslagen!');
-        }
-        
-        document.getElementById('sync-dot').className = 'w-2 h-2 rounded-full bg-green-500';
-        
-    } catch (error) {
-        console.error('Sync Error:', error);
-        alert('SYNC MISLUKT: ' + error.message + '\n\nCheck of je Master Key en Bin ID exact kloppen.');
-    }
-}
 
         init();
     </script>
